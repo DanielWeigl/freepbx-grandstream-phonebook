@@ -43,6 +43,8 @@
 	
 	header('Content-type: application/xml');
 	$xml_obj = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><AddressBook />');
+	
+	// add internal nr from users table
 	foreach (DBQuery("select * from users") as $x){
 		$name = explode(" ", $x['name']);
 		$Contact = $xml_obj->addChild('Contact');
@@ -52,6 +54,20 @@
 		}
 		$Phone = $Contact->addChild('Phone');
 		$phonenumber = $Phone->addChild('phonenumber', $x['extension']);
+		$accountindex = $Phone->addChild('accountindex', 1);
+	}
+	
+	// add external users from contact manager
+	foreach (DBQuery(SELECT * FROM contactmanager_group_entries ce LEFT JOIN contactmanager_entry_numbers cn ON ce.id=cn.entryid WHERE ce.groupid!=1") as $x){
+		$Contact = $xml_obj->addChild('Contact');
+		if (!isempty($x['lname']) && !isempty($x['fname'])){
+			$LastName = $Contact->addChild('LastName', $x['lname'] . "/" . $x['type']);
+			$FirstName = $Contact->addChild('FirstName', $x['fname']);
+		} else {
+			$LastName = $Contact->addChild('LastName', $x['displayname']. "/" . $x['type']);
+		}
+		$Phone = $Contact->addChild('Phone');
+		$phonenumber = $Phone->addChild('phonenumber', $x['number'] . $x['extension']);
 		$accountindex = $Phone->addChild('accountindex', 1);
 	}
 	
