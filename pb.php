@@ -58,9 +58,9 @@
 	}
 	
 	// add external users from contact manager
-	foreach (DBQuery(SELECT * FROM contactmanager_group_entries ce LEFT JOIN contactmanager_entry_numbers cn ON ce.id=cn.entryid WHERE ce.groupid!=1") as $x){
+	foreach (DBQuery("SELECT * FROM contactmanager_group_entries ce LEFT JOIN contactmanager_entry_numbers cn ON ce.id=cn.entryid WHERE ce.groupid!=1") as $x){
 		$Contact = $xml_obj->addChild('Contact');
-		if (!isempty($x['lname']) && !isempty($x['fname'])){
+		if (!empty($x['lname']) && !empty($x['fname'])){
 			$LastName = $Contact->addChild('LastName', $x['lname'] . "/" . $x['type']);
 			$FirstName = $Contact->addChild('FirstName', $x['fname']);
 		} else {
